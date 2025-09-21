@@ -1,31 +1,38 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-// From Netlify environment variables
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
+const supabaseUrl = process.env.SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // must exist
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Missing Supabase environment variables")
-}
+if (!supabaseUrl) throw new Error('Missing SUPABASE_URL');
+if (!serviceRoleKey) throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY');
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, serviceRoleKey, {
+  db: { schema: 'public' }, // your tables are in public
+});
 
 // Helpers
 export const ok = (body, status = 200) => ({
   statusCode: status,
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(body)
-})
+  headers: {
+    'Content-Type': 'application/json',
+    // CORS (handy if you ever open this cross-origin)
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  },
+  body: JSON.stringify(body),
+});
 
 export const cors = () => ({
-  statusCode: 200,
+  statusCode: 204,
   headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS"
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
   },
-  body: ""
-})
-console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
-console.log("SUPABASE_SERVICE_ROLE_KEY:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
-console.log("SUPABASE_ANON_KEY:", !!process.env.SUPABASE_ANON_KEY);
+});
+
+// Safe debug (doesn't print secrets)
+console.log('SUPABASE_URL set?', !!process.env.SUPABASE_URL);
+console.log('SERVICE_ROLE set?', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+console.log('ANON set? (not used in functions)', !!process.env.SUPABASE_ANON_KEY);
