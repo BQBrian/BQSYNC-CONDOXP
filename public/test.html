@@ -1,8 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compute API Tester</title>
+</head>
+<body>
+  <h1>Compute API Tester</h1>
+  <p>Send a POST request to your Netlify function and see the JSON response.</p>
+
+  <form id="apiForm">
+    <label>Endpoint:</label><br/>
+    <input type="text" id="endpoint" value="/.netlify/functions/compute" size="60"/><br/><br/>
+
+    <label>JSON body:</label><br/>
+    <textarea id="jsonBody" rows="8" cols="60">
 {
   "user_email": "test@example.com",
-  "inputs": {
-    "gfa": 50,
-    "living_area": 20
-  },
+  "inputs": { "gfa": 50, "living_area": 20 },
   "has_balcony": true
 }
+    </textarea><br/><br/>
+
+    <button type="submit">Send POST</button>
+  </form>
+
+  <h3>Response</h3>
+  <pre id="responseBox"></pre>
+
+  <script>
+    document.getElementById("apiForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const endpoint = document.getElementById("endpoint").value;
+      const body = document.getElementById("jsonBody").value;
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body
+        });
+        const data = await res.json();
+        document.getElementById("responseBox").textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById("responseBox").textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
