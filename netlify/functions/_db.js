@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-// These come from Netlify environment variables
+// From Netlify environment variables
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
 
@@ -10,7 +10,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Helpers for responses
+// Helpers
 export const ok = (body, status = 200) => ({
   statusCode: status,
   headers: { "Content-Type": "application/json" },
